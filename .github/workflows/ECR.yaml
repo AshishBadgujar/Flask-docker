@@ -4,10 +4,6 @@ on:
   push:
     branches: [dev]
 
-env:
-  AWS_REGION: ap-south-1 # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: flask-docker # set this to your Amazon ECR repository name
-
 jobs:
   build:
     name: Build image
@@ -30,7 +26,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: docker-react
+          ECR_REPOSITORY: flask-docker
           IMAGE_TAG: 1.0
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
