@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:slim-buster
 WORKDIR /flask-docker
 
 COPY requirements.txt .
