@@ -1,16 +1,16 @@
 name: Deploy docker image
-
 on:
   push:
     branches: [dev]
-
 jobs:
-  build:
-    name: Build image
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -24,11 +24,12 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: docker-flask
-          IMAGE_TAG: "1.0"
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t docker-flask .
-          docker tag docker-flask:latest public.ecr.aws/a2b8t1c7/docker-flask:1.0
-          docker push public.ecr.aws/a2b8t1c7/docker-flask:1.0
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
